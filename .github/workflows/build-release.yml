@@ -44,7 +44,7 @@ jobs:
     name: Build Binaries
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    if: startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         include:
@@ -155,7 +155,7 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: |
-          ghcr.io/${{ github.repository }}
+          ghcr.io/${{ github.repository_owner }}/cloudget
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -234,7 +234,7 @@ jobs:
         echo "" >> CHANGELOG.md
         echo "### Docker" >> CHANGELOG.md
         echo "\`\`\`bash" >> CHANGELOG.md
-        echo "docker pull ghcr.io/${{ github.repository }}:${{ github.ref_name }}" >> CHANGELOG.md
+         echo "docker pull ghcr.io/${{ github.repository_owner }}/cloudget:${{ github.ref_name }}" >> CHANGELOG.md
         echo "\`\`\`" >> CHANGELOG.md
         echo "" >> CHANGELOG.md
         echo "### Installation" >> CHANGELOG.md
