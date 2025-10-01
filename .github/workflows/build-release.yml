@@ -119,12 +119,16 @@ jobs:
         BINARY_NAME_WITH_OS="${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.suffix }}"
         go build -a -installsuffix cgo -ldflags="-w -s" -o "dist/${BINARY_NAME_WITH_OS}" ./cmd/downloader
         
-        # Create archive
+        # Create archive with renamed binary
         cd dist
         if [ "${{ matrix.goos }}" = "windows" ]; then
-          zip "${BINARY_NAME_WITH_OS%.exe}.zip" "${BINARY_NAME_WITH_OS}"
+          cp "${BINARY_NAME_WITH_OS}" "cloudget.exe"
+          zip "${BINARY_NAME_WITH_OS%.exe}.zip" "cloudget.exe"
+          rm "cloudget.exe"
         else
-          tar -czf "${BINARY_NAME_WITH_OS}.tar.gz" "${BINARY_NAME_WITH_OS}"
+          cp "${BINARY_NAME_WITH_OS}" "cloudget"
+          tar -czf "${BINARY_NAME_WITH_OS}.tar.gz" "cloudget"
+          rm "cloudget"
         fi
         cd ..
 
