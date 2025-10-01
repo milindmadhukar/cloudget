@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cloud-downloader/downloader/pkg/interfaces"
+	"github.com/milindmadhukar/cloudget/pkg/interfaces"
 )
 
 // ResumeManager handles saving and loading download progress for resumption
@@ -19,7 +19,7 @@ type ResumeManager struct {
 // NewResumeManager creates a new resume manager
 func NewResumeManager(resumeDir string) *ResumeManager {
 	if resumeDir == "" {
-		resumeDir = filepath.Join(os.TempDir(), "cloud-downloader-resume")
+		resumeDir = filepath.Join(os.TempDir(), "cloudget-resume")
 	}
 
 	// Ensure resume directory exists

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloud-downloader/downloader/pkg/interfaces"
-	"github.com/cloud-downloader/downloader/pkg/services/dropbox"
-	"github.com/cloud-downloader/downloader/pkg/services/gdrive"
-	"github.com/cloud-downloader/downloader/pkg/services/wetransfer"
-	"github.com/cloud-downloader/downloader/pkg/utils"
+	"github.com/milindmadhukar/cloudget/pkg/interfaces"
+	"github.com/milindmadhukar/cloudget/pkg/services/dropbox"
+	"github.com/milindmadhukar/cloudget/pkg/services/gdrive"
+	"github.com/milindmadhukar/cloudget/pkg/services/wetransfer"
+	"github.com/milindmadhukar/cloudget/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 

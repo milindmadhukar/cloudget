@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloud-downloader/downloader/pkg/downloader"
-	"github.com/cloud-downloader/downloader/pkg/interfaces"
+	"github.com/milindmadhukar/cloudget/pkg/downloader"
+	"github.com/milindmadhukar/cloudget/pkg/interfaces"
 )
 
 func TestManagerInitialization(t *testing.T) {

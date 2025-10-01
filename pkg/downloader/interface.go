@@ -1,7 +1,7 @@
 package downloader
 
 import (
-	"github.com/cloud-downloader/downloader/pkg/interfaces"
+	"github.com/milindmadhukar/cloudget/pkg/interfaces"
 )
 
 // Type aliases for backward compatibility

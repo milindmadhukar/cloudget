@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloud-downloader/downloader/pkg/downloader"
-	"github.com/cloud-downloader/downloader/pkg/interfaces"
+	"github.com/milindmadhukar/cloudget/pkg/downloader"
+	"github.com/milindmadhukar/cloudget/pkg/interfaces"
 	"github.com/sirupsen/logrus"
 )
 
@@ -242,7 +242,7 @@ func formatBytes(bytes int64) string {
 }
 
 func printHelp() {
-	fmt.Printf(`Cloud Downloader CLI - Download files from Dropbox, Google Drive, and WeTransfer
+	fmt.Printf(`CloudGet CLI - Download files from Dropbox, Google Drive, and WeTransfer
 
 Usage:
   %s -url "https://example.com/file" [options]

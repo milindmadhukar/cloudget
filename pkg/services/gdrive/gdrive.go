@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/cloud-downloader/downloader/pkg/interfaces"
-	"github.com/cloud-downloader/downloader/pkg/utils"
+	"github.com/milindmadhukar/cloudget/pkg/interfaces"
+	"github.com/milindmadhukar/cloudget/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 

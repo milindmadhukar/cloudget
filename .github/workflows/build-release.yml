@@ -9,7 +9,7 @@ on:
 
 env:
   GO_VERSION: '1.25'
-  BINARY_NAME: 'cloud-downloader'
+  BINARY_NAME: 'cloudget'
 
 jobs:
   test:
@@ -142,13 +142,6 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Docker Hub
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
     - name: Log in to GitHub Container Registry
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
       uses: docker/login-action@v3
@@ -162,7 +155,6 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: |
-          ${{ secrets.DOCKER_USERNAME }}/cloud-downloader
           ghcr.io/${{ github.repository }}
         tags: |
           type=ref,event=branch
@@ -229,16 +221,16 @@ jobs:
         echo "" >> CHANGELOG.md
         echo "| Platform | Architecture | Download |" >> CHANGELOG.md
         echo "|----------|--------------|----------|" >> CHANGELOG.md
-        echo "| Windows | x86_64 | \`cloud-downloader-windows-amd64.zip\` |" >> CHANGELOG.md
-        echo "| Windows | ARM64 | \`cloud-downloader-windows-arm64.zip\` |" >> CHANGELOG.md
-        echo "| Linux | x86_64 | \`cloud-downloader-linux-amd64.tar.gz\` |" >> CHANGELOG.md
-        echo "| Linux | ARM64 | \`cloud-downloader-linux-arm64.tar.gz\` |" >> CHANGELOG.md
-        echo "| Linux | ARM | \`cloud-downloader-linux-arm.tar.gz\` |" >> CHANGELOG.md
-        echo "| Linux | i386 | \`cloud-downloader-linux-386.tar.gz\` |" >> CHANGELOG.md
-        echo "| macOS | Intel | \`cloud-downloader-darwin-amd64.tar.gz\` |" >> CHANGELOG.md
-        echo "| macOS | Apple Silicon | \`cloud-downloader-darwin-arm64.tar.gz\` |" >> CHANGELOG.md
-        echo "| FreeBSD | x86_64 | \`cloud-downloader-freebsd-amd64.tar.gz\` |" >> CHANGELOG.md
-        echo "| FreeBSD | ARM64 | \`cloud-downloader-freebsd-arm64.tar.gz\` |" >> CHANGELOG.md
+        echo "| Windows | x86_64 | \`cloudget-windows-amd64.zip\` |" >> CHANGELOG.md
+        echo "| Windows | ARM64 | \`cloudget-windows-arm64.zip\` |" >> CHANGELOG.md
+        echo "| Linux | x86_64 | \`cloudget-linux-amd64.tar.gz\` |" >> CHANGELOG.md
+        echo "| Linux | ARM64 | \`cloudget-linux-arm64.tar.gz\` |" >> CHANGELOG.md
+        echo "| Linux | ARM | \`cloudget-linux-arm.tar.gz\` |" >> CHANGELOG.md
+        echo "| Linux | i386 | \`cloudget-linux-386.tar.gz\` |" >> CHANGELOG.md
+        echo "| macOS | Intel | \`cloudget-darwin-amd64.tar.gz\` |" >> CHANGELOG.md
+        echo "| macOS | Apple Silicon | \`cloudget-darwin-arm64.tar.gz\` |" >> CHANGELOG.md
+        echo "| FreeBSD | x86_64 | \`cloudget-freebsd-amd64.tar.gz\` |" >> CHANGELOG.md
+        echo "| FreeBSD | ARM64 | \`cloudget-freebsd-arm64.tar.gz\` |" >> CHANGELOG.md
         echo "" >> CHANGELOG.md
         echo "### Docker" >> CHANGELOG.md
         echo "\`\`\`bash" >> CHANGELOG.md
@@ -248,12 +240,12 @@ jobs:
         echo "### Installation" >> CHANGELOG.md
         echo "1. Download the appropriate binary for your platform" >> CHANGELOG.md
         echo "2. Extract the archive" >> CHANGELOG.md
-        echo "3. Make the binary executable (Linux/macOS): \`chmod +x cloud-downloader-*\`" >> CHANGELOG.md
+        echo "3. Make the binary executable (Linux/macOS): \`chmod +x cloudget-*\`" >> CHANGELOG.md
         echo "4. Move to a directory in your PATH (optional)" >> CHANGELOG.md
         echo "" >> CHANGELOG.md
         echo "### Usage" >> CHANGELOG.md
         echo "\`\`\`bash" >> CHANGELOG.md
-        echo "./cloud-downloader-linux-amd64 -url \"https://dropbox.com/s/abc/file.zip\"" >> CHANGELOG.md
+        echo "./cloudget-linux-amd64 -url \"https://dropbox.com/s/abc/file.zip\"" >> CHANGELOG.md
         echo "\`\`\`" >> CHANGELOG.md
 
     - name: Create Release

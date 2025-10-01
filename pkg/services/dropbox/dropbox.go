@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/cloud-downloader/downloader/pkg/interfaces"
+	"github.com/milindmadhukar/cloudget/pkg/interfaces"
 	"github.com/sirupsen/logrus"
 )
 

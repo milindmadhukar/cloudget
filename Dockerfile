@@ -18,7 +18,7 @@ COPY pkg/ pkg/
 COPY cmd/ cmd/
 
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o downloader ./cmd/downloader
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o cloudget ./cmd/downloader
 
 # Final stage - minimal runtime image
 FROM alpine:3.18
@@ -36,10 +36,10 @@ RUN addgroup -g 1001 -S app && \
 WORKDIR /app
 
 # Copy the binary from builder stage
-COPY --from=builder /app/downloader .
+COPY --from=builder /app/cloudget .
 
 # Make binary executable and set ownership
-RUN chmod +x downloader && \
+RUN chmod +x cloudget && \
     chown -R app:app /app /downloads
 
 # Switch to non-root user
@@ -49,5 +49,5 @@ USER app
 ENV DOWNLOAD_DIR=/downloads
 
 # Default command
-ENTRYPOINT ["./downloader"]
+ENTRYPOINT ["./cloudget"]
 CMD ["-help"]

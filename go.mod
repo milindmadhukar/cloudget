@@ -1,4 +1,4 @@
-module github.com/cloud-downloader/downloader
+module github.com/milindmadhukar/cloudget
 
 go 1.25
 
@@ -6,6 +6,7 @@ require (
 	github.com/go-resty/resty/v2 v2.10.0
 	github.com/schollz/progressbar/v3 v3.18.0
 	github.com/sirupsen/logrus v1.9.3
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
@@ -17,4 +18,5 @@ require (
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/term v0.28.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
