@@ -1,6 +1,6 @@
 module github.com/cloud-downloader/downloader
 
-go 1.22
+go 1.25
 
 require (
 	github.com/go-resty/resty/v2 v2.10.0
