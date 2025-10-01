@@ -8,7 +8,7 @@ on:
     branches: [ main ]
 
 env:
-  GO_VERSION: '1.22'
+  GO_VERSION: '1.25'
   BINARY_NAME: 'cloud-downloader'
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
     - name: Run staticcheck
       uses: dominikh/staticcheck-action@v1.3.0
       with:
-        version: "2023.1.6"
+        version: "2024.1.1"
 
   build:
     name: Build Binaries
