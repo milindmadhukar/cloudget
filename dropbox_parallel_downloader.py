@@ -21,12 +21,13 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Optional, Tuple, List, Union
+from pathlib import Path
+from typing import Optional, Tuple, List, Union, Any
 from urllib.parse import urlparse, unquote
 import json
 import time
 
-from tqdm.asyncio import tqdm
+from tqdm import tqdm as TqdmClass
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 
@@ -83,7 +84,7 @@ class DropboxDownloader:
         else:
             raise ValueError("Unsupported Dropbox URL format")
     
-    def extract_filename(self, url: str, response_headers: dict = None) -> str:
+    def extract_filename(self, url: str, response_headers = None) -> str:
         """Extract filename from URL or headers"""
         # Try to get filename from Content-Disposition header
         if response_headers and 'content-disposition' in response_headers:
@@ -114,7 +115,11 @@ class DropboxDownloader:
     async def get_file_info(self, session: aiohttp.ClientSession, url: str) -> Tuple[int, str, bool]:
         """Get file size, filename, and range support"""
         try:
-            async with session.head(url, allow_redirects=True) as response:
+            headers = {
+                'Accept-Encoding': 'identity',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            async with session.head(url, allow_redirects=True, headers=headers) as response:
                 response.raise_for_status()
                 
                 file_size = int(response.headers.get('Content-Length', 0))
@@ -135,7 +140,11 @@ class DropboxDownloader:
     async def download_chunk(self, session: aiohttp.ClientSession, url: str, 
                            start: int, end: int, chunk_id: int) -> Tuple[int, bytes]:
         """Download a single chunk with retry logic"""
-        headers = {'Range': f'bytes={start}-{end}'}
+        headers = {
+            'Range': f'bytes={start}-{end}',
+            'Accept-Encoding': 'identity',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
         
         try:
             async with session.get(url, headers=headers, timeout=self.client_timeout) as response:
@@ -156,9 +165,13 @@ class DropboxDownloader:
             raise
     
     async def download_simple(self, session: aiohttp.ClientSession, url: str, 
-                            output_path: Path, progress_bar: tqdm) -> None:
+                            output_path: Path, progress_bar: Any) -> None:
         """Simple download without range requests"""
-        async with session.get(url) as response:
+        headers = {
+            'Accept-Encoding': 'identity',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        async with session.get(url, headers=headers) as response:
             response.raise_for_status()
             
             async with aiofiles.open(output_path, 'wb') as f:
@@ -167,7 +180,7 @@ class DropboxDownloader:
                     progress_bar.update(len(chunk))
     
     async def download_parallel(self, session: aiohttp.ClientSession, url: str,
-                              output_path: Path, file_size: int, progress_bar: tqdm) -> None:
+                              output_path: Path, file_size: int, progress_bar: Any) -> None:
         """Download file using parallel chunks"""
         # Calculate chunks
         chunks = []
@@ -178,29 +191,37 @@ class DropboxDownloader:
         
         self.logger.info(f"Downloading {file_size:,} bytes in {len(chunks)} chunks")
         
-        # Download chunks with limited concurrency
-        semaphore = asyncio.Semaphore(self.max_connections)
-        downloaded_chunks = {}
+        # Create file with correct size using truncate (more efficient)
+        async with aiofiles.open(output_path, 'wb') as f:
+            await f.truncate(file_size)
         
-        async def download_with_semaphore(start: int, end: int, chunk_id: int):
+        # Download chunks with limited concurrency and write directly to file
+        semaphore = asyncio.Semaphore(self.max_connections)
+        write_lock = asyncio.Lock()
+        
+        async def download_and_write_chunk(start: int, end: int, chunk_id: int):
             async with semaphore:
-                chunk_id, data = await self.download_chunk(session, url, start, end, chunk_id)
-                downloaded_chunks[chunk_id] = data
-                progress_bar.update(len(data))
-                return chunk_id, data
+                try:
+                    chunk_id, data = await self.download_chunk(session, url, start, end, chunk_id)
+                    if data:
+                        # Write chunk directly to file at correct position
+                        async with write_lock:
+                            async with aiofiles.open(output_path, 'r+b') as f:
+                                await f.seek(start)
+                                await f.write(data)
+                        progress_bar.update(len(data))
+                    return chunk_id, len(data) if data else 0
+                except Exception as e:
+                    self.logger.error(f"Failed to download chunk {chunk_id}: {e}")
+                    raise
         
         # Execute downloads
         tasks = [
-            download_with_semaphore(start, end, chunk_id)
+            download_and_write_chunk(start, end, chunk_id)
             for start, end, chunk_id in chunks
         ]
         
         await asyncio.gather(*tasks)
-        
-        # Write chunks in order
-        async with aiofiles.open(output_path, 'wb') as f:
-            for chunk_id in sorted(downloaded_chunks.keys()):
-                await f.write(downloaded_chunks[chunk_id])
     
     def load_resume_info(self, resume_file: Path) -> dict:
         """Load resume information from file"""
@@ -235,7 +256,10 @@ class DropboxDownloader:
             async with aiohttp.ClientSession(
                 connector=self.connector,
                 timeout=self.client_timeout,
-                headers={'User-Agent': 'Mozilla/5.0 (compatible; DropboxDownloader/1.0)'}
+                headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Accept-Encoding': 'identity'
+                }
             ) as session:
                 
                 # Get file information
@@ -269,7 +293,7 @@ class DropboxDownloader:
                 
                 # Setup progress bar
                 display_name = output_path.name if custom_path else (custom_filename or detected_filename)
-                progress_bar = tqdm(
+                progress_bar = TqdmClass(
                     total=file_size,
                     unit='B',
                     unit_scale=True,
